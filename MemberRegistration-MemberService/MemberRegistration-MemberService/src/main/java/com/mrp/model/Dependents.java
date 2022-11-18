@@ -18,15 +18,20 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mrp.utils.MemberIdGenerator;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "dependents")
-@Data
+//@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Dependents {
@@ -52,7 +57,15 @@ public class Dependents {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "member_id", nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
+	@JsonIgnoreProperties("memberDependents")
 	private Member member;
+
+	@Override
+	public String toString() {
+		return "Dependents [dependentId=" + dependentId + ", dependentName=" + dependentName + ", dependentDOB="
+				+ dependentDOB + ", dependentAge=" + dependentAge + ", member=" + member + "]";
+	}
+	
+	
 
 }

@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.mrp.model.Member;
 
-public interface OnboardRepository extends JpaRepository<Member, String> {
+public interface MemberRepository extends JpaRepository<Member, String> {
 	
 	public Member findByMemberId(String memberId);
 	

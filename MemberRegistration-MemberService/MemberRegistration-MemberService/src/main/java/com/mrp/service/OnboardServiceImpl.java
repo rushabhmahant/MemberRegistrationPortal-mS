@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.mrp.exceptionhandling.BusinessException;
 import com.mrp.model.Member;
-import com.mrp.repository.OnboardRepository;
+import com.mrp.repository.MemberRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OnboardServiceImpl implements OnboardService {
 	
 	@Autowired
-	private OnboardRepository onboardRepository;
+	private MemberRepository memberRepository;
 
 	@Override
 	public Member authenticate(Member member) {
@@ -26,7 +26,7 @@ public class OnboardServiceImpl implements OnboardService {
 			log.error("Invalid username or pasword!" + member);
 			throw new BusinessException("400", "Invalid username or password");
 		}
-		Member memberFound = onboardRepository.findByMemberEmailId(memberEmailId);
+		Member memberFound = memberRepository.findByMemberEmailId(memberEmailId);
 		if(memberFound == null || !member.getMemberPassword().equals(memberFound.getMemberPassword())) {
 			log.error("Incorrect username or pasword!" + member);
 			throw new BusinessException("400", "Incorrect username or pasword!");
@@ -44,14 +44,14 @@ public class OnboardServiceImpl implements OnboardService {
 		}
 		log.info("Member details are validated, checking if Email id already exists");
 		
-		if(onboardRepository.findByMemberEmailId(member.getMemberEmailId()) != null) {
+		if(memberRepository.findByMemberEmailId(member.getMemberEmailId()) != null) {
 			log.error("Email id is already registered: " + member.getMemberEmailId());
 			throw new BusinessException("400", "Email id is already registered, please use a different email id");
 		}
 		
 		member.setMemberAge(Period.between(member.getMemberDOB(), LocalDate.now()).getYears());
 		log.info("Storing member details in database... " + member);
-		return onboardRepository.save(member);
+		return memberRepository.save(member);
 	}
 
 	private boolean validMemberArguments(Member newMember) {
