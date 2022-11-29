@@ -57,7 +57,7 @@ public class ClaimServiceImpl implements ClaimService {
 					", length: " + claim.getDependentId().length());
 			throw new BusinessException("400", "Invalid dependent id, please provide valid dependent id for submitting claim");
 		}
-		else {
+		else if(claim.getDependentId() == null) {
 			claim.setDependentId("self");
 		}
 		
