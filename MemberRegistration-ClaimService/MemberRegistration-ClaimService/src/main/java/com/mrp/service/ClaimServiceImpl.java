@@ -1,5 +1,7 @@
 package com.mrp.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -39,7 +41,7 @@ public class ClaimServiceImpl implements ClaimService {
 	@Override
 	public Claim submitClaim(Claim claim) {
 		
-		if(!validClaimArguments(claim)) {
+		if(validateClaimArguments(claim)) {
 			log.error("Incorrect claim details, please provide valid details for submitting claim: " + claim);
 			throw new BusinessException("400", "Incorrect claim details, please provide valid details for submitting claim");
 		}
@@ -50,18 +52,27 @@ public class ClaimServiceImpl implements ClaimService {
 			throw new BusinessException("400", "Discharge date should fall on or after admission date");
 		}
 		
-		if(claim.getDependentId() == null || claim.getDependentId().length() != 5 || !claim.getDependentId().startsWith("R-")) {
+		if(claim.getDependentId() != null && (claim.getDependentId().length() != 5 || !claim.getDependentId().startsWith("R-"))) {
+			log.error("Invalid dependent id for claim, please provide valid dependent id for submitting claim: " + claim.getDependentId() + 
+					", length: " + claim.getDependentId().length());
+			throw new BusinessException("400", "Invalid dependent id, please provide valid dependent id for submitting claim");
+		}
+		else {
 			claim.setDependentId("self");
 		}
+		
+		claim.setAge(Period.between(claim.getDateOfBirth(), LocalDate.now()).getYears());
 		
 		return claimRepository.save(claim);
 		
 	}
 
-	private boolean validClaimArguments(Claim claim) {
+	private boolean validateClaimArguments(Claim claim) {
+		log.info("Validating input... " + claim);
 		return Stream.of(claim.getDateOfAdmission(), claim.getDateOfBirth(), claim.getDateOfDischarge(),
-				claim.getFirstName(), claim.getLastName())
-				.allMatch(Objects::isNull);
+				claim.getFirstName(), claim.getLastName(), claim.getMemberId(),
+				claim.getProviderName(), claim.getTotalBillAmount())
+				.anyMatch(Objects::isNull);
 	}
 
 }

@@ -36,7 +36,7 @@ public class Claim {
 	@Column(nullable = false)
 	private LocalDate dateOfBirth;
 	@Column(nullable = false)
-	private LocalDate age;
+	private Integer age;
 	@Column(nullable = false)
 	private LocalDate dateOfAdmission;
 	@Column(nullable = false)
