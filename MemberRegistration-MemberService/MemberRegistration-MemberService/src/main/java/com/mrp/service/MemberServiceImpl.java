@@ -59,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
 		Member member = memberRepository.findByMemberId(memberId);
 		
 		if(member == null) {
-			log.error("Member doest not exist ");
+			log.error("Member does not exist ");
 			throw new BusinessException("400", "Member does not exist.");
 		}
 		if(!member.getMemberIsRegistered()) {
@@ -174,6 +174,35 @@ public class MemberServiceImpl implements MemberService {
 		log.info("Modified dependent in database... " + dependent.getDependentId());
 		
 		return memberRepository.findByMemberId(memberId);
+	}
+
+	@Override
+	public Member updateMember(String memberId, Member member) {
+		log.info("Updating member " + member + "...");
+		if(member.getMemberId() == null) {
+			log.error("Please provide a valid member id to perform update");
+			throw new BusinessException("400", "Please provide a valid member id to perform update.");
+		}
+		if(memberRepository.findByMemberId(member.getMemberId()) == null) {
+			log.error("Member with the provided member id does not exist ");
+			throw new BusinessException("400", "Member with the provided member id does not exist.");
+		}
+		
+		if(!validMemberArguments(member) || member.getMemberEmailId() == null || 
+				!member.getMemberEmailId().contains("@")) {
+			log.error("Invalid dependent details, please provide valid details. " + member);
+			throw new BusinessException("400", "Invalid dependent details, please provide valid details");
+		}
+		
+		if(memberRepository.findByMemberEmailId(member.getMemberEmailId()) != null) {
+			log.error("Email id is already registered: " + member.getMemberEmailId());
+			throw new BusinessException("400", "Email id is already registered, please use a different email id");
+		}
+		
+		
+		log.info("Updating member in database... " + member.getMemberId());
+		
+		return memberRepository.save(member);
 	}
 
 }

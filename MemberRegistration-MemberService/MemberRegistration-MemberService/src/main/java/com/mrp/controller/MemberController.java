@@ -68,7 +68,22 @@ public class MemberController {
 			ControllerException ce = new ControllerException(be.getErrorCode(), be.getErrorMessage());
 			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
 		}catch(Exception e) {
-			log.error("Exception occurred while adding dependent: ", e);
+			log.error("Exception occurred while updating dependent: ", e);
+			ControllerException ce = new ControllerException("500", "Internal Server Error: " + e.getMessage());
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping("/{memberId}/update-member")
+	public ResponseEntity<?> updateMember(@PathVariable String memberId, @RequestBody Member member){
+		try {
+			Member updatedMember = memberService.updateMember(memberId, member);
+			return new ResponseEntity<Member>(updatedMember, HttpStatus.OK);
+		}catch(BusinessException be) {
+			ControllerException ce = new ControllerException(be.getErrorCode(), be.getErrorMessage());
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+		}catch(Exception e) {
+			log.error("Exception occurred while updating member: ", e);
 			ControllerException ce = new ControllerException("500", "Internal Server Error: " + e.getMessage());
 			return new ResponseEntity<ControllerException>(ce, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
