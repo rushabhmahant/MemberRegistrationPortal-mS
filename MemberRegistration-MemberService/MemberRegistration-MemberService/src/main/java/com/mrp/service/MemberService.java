@@ -14,4 +14,6 @@ public interface MemberService {
 
 	Member removeDependent(String memberId, String dependentId);
 
+	Member editDependent(String memberId, Dependents dependent);
+
 }

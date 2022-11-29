@@ -3,6 +3,7 @@ package com.mrp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @RequestMapping("/member")
+@CrossOrigin
 public class MemberController {
 	
 	@Autowired
@@ -46,6 +48,21 @@ public class MemberController {
 	public ResponseEntity<?> addDependent(@PathVariable String memberId, @RequestBody Dependents dependent){
 		try {
 			Member updatedMember = memberService.addDependent(memberId, dependent);
+			return new ResponseEntity<Member>(updatedMember, HttpStatus.OK);
+		}catch(BusinessException be) {
+			ControllerException ce = new ControllerException(be.getErrorCode(), be.getErrorMessage());
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+		}catch(Exception e) {
+			log.error("Exception occurred while adding dependent: ", e);
+			ControllerException ce = new ControllerException("500", "Internal Server Error: " + e.getMessage());
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping("/{memberId}/edit-dependent")
+	public ResponseEntity<?> editDependent(@PathVariable String memberId, @RequestBody Dependents dependent){
+		try {
+			Member updatedMember = memberService.editDependent(memberId, dependent);
 			return new ResponseEntity<Member>(updatedMember, HttpStatus.OK);
 		}catch(BusinessException be) {
 			ControllerException ce = new ControllerException(be.getErrorCode(), be.getErrorMessage());

@@ -23,12 +23,12 @@ public class OnboardServiceImpl implements OnboardService {
 	public Member authenticate(Member member) {
 		String memberEmailId = member.getMemberEmailId();
 		if(memberEmailId == null || !memberEmailId.contains("@")) {
-			log.error("Invalid username or pasword!" + member);
+			log.error("Invalid username or pasword! " + member);
 			throw new BusinessException("400", "Invalid username or password");
 		}
 		Member memberFound = memberRepository.findByMemberEmailId(memberEmailId);
 		if(memberFound == null || !member.getMemberPassword().equals(memberFound.getMemberPassword())) {
-			log.error("Incorrect username or pasword!" + member);
+			log.error("Incorrect username or pasword! " + member);
 			throw new BusinessException("400", "Incorrect username or pasword!");
 		}
 		

@@ -35,6 +35,10 @@ public class MemberServiceImpl implements MemberService {
 		log.info("Member details validated, proceeding for registration...");
 		
 		Member existingMember = memberRepository.findByMemberEmailId(member.getMemberEmailId());
+		if(existingMember.getMemberIsRegistered()) {
+			log.error("Member is already registered. " + member);
+			throw new BusinessException("400", "Member is already registered");
+		}
 		existingMember.setMemberContactNo(member.getMemberContactNo());
 		existingMember.setMemberPAN(member.getMemberPAN());
 		existingMember.setMemberCountry(member.getMemberCountry());
@@ -130,6 +134,45 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public Member findByMemberId(String memberId) {
+		return memberRepository.findByMemberId(memberId);
+	}
+
+	@Override
+	public Member editDependent(String memberId, Dependents dependent) {
+		log.info("Modifying dependent details for " + dependent + "...");
+		Member member = memberRepository.findByMemberId(memberId);
+		
+		if(member == null) {
+			log.error("Member doest not exist ");
+			throw new BusinessException("400", "Member does not exist.");
+		}
+		if(!member.getMemberIsRegistered()) {
+			log.error("Please register first, then edit the dependents. ");
+			throw new BusinessException("400", "Please register first, then add the dependents.");
+		}
+		if(dependent.getDependentId() == null || dependent.getDependentId().length() != 5 || !dependent.getDependentId().startsWith("R-")) {
+			log.error("Invalid dependent id, please provide correct dependent id. ");
+			throw new BusinessException("400", "Invalid dependent id, please provide correct dependent id.");
+		}
+		
+		if(!validDependentArguments(dependent)) {
+			log.error("Invalid dependent details, please provide valid details. " + member);
+			throw new BusinessException("400", "Invalid dependent details, please provide valid details");
+		}
+		
+		dependent.setDependentAge(Period.between(dependent.getDependentDOB(), LocalDate.now()).getYears());
+		dependent.setMember(member);
+		dependent = dependentsRepository.save(dependent);
+		//member.addDependent(dependent);
+		
+		for(Dependents originalDependent: member.getMemberDependents()) {
+			if(originalDependent.getDependentId().equals(dependent.getDependentId())) {
+				
+			}
+		}
+		
+		log.info("Modified dependent in database... " + dependent.getDependentId());
+		
 		return memberRepository.findByMemberId(memberId);
 	}
 
