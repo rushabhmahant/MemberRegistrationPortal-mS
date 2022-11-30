@@ -183,7 +183,8 @@ public class MemberServiceImpl implements MemberService {
 			log.error("Please provide a valid member id to perform update");
 			throw new BusinessException("400", "Please provide a valid member id to perform update.");
 		}
-		if(memberRepository.findByMemberId(member.getMemberId()) == null) {
+		Member existingMember = memberRepository.findByMemberId(member.getMemberId());
+		if(existingMember == null) {
 			log.error("Member with the provided member id does not exist ");
 			throw new BusinessException("400", "Member with the provided member id does not exist.");
 		}
@@ -194,10 +195,12 @@ public class MemberServiceImpl implements MemberService {
 			throw new BusinessException("400", "Invalid dependent details, please provide valid details");
 		}
 		
-		if(memberRepository.findByMemberEmailId(member.getMemberEmailId()) != null) {
+		if(!member.getMemberEmailId().equals(existingMember.getMemberEmailId()) && 
+				memberRepository.findByMemberEmailId(member.getMemberEmailId()) != null) {
 			log.error("Email id is already registered: " + member.getMemberEmailId());
 			throw new BusinessException("400", "Email id is already registered, please use a different email id");
 		}
+		member.setMemberPassword(existingMember.getMemberPassword());
 		
 		
 		log.info("Updating member in database... " + member.getMemberId());
