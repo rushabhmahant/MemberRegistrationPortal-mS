@@ -114,7 +114,7 @@ public class MemberServiceImpl implements MemberService {
 
 	private boolean validDependentArguments(Dependents dependent) {
 		if(dependent.getDependentName() != null && 
-				dependent.getDependentDOB().compareTo(LocalDate.now()) < 0) {
+				dependent.getDependentDOB().compareTo(LocalDate.now()) <= 0) {
 			return true;
 		}
 		return false;

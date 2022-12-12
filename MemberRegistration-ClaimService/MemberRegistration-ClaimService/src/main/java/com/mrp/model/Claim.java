@@ -11,12 +11,14 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "claim")
 @SequenceGenerator(name = "claimIdGenerator", sequenceName = "claimIdGenerator",  initialValue = 1000000000)
